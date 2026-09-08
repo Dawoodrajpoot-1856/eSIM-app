@@ -1,3 +1,4 @@
+// lib/db.ts
 import { createClient } from "@supabase/supabase-js";
 
 const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -18,4 +19,17 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(
   supabaseUrl || "https://placeholder.supabase.co",
   supabaseAnonKey || "placeholder-key",
+  {
+    auth: {
+      persistSession: false,
+    },
+    global: {
+      fetch: (url, options = {}) => {
+        return fetch(url, {
+          ...options,
+          cache: "no-store",
+        });
+      },
+    },
+  },
 );
