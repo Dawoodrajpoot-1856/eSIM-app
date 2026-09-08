@@ -109,10 +109,7 @@ export default function MobileMenu({
 
                 <SheetClose
                   onClick={async () => {
-                    // 1. Pehle NextAuth ka session khatam karein bina automatic redirect ke
                     await signOut({ redirect: false });
-
-                    // 2. Phir browser ko forcefully live URL par refresh/redirect kar dein
                     window.location.href =
                       "https://esim-app-codiea.vercel.app/";
                   }}
