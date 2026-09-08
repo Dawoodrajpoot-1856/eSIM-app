@@ -93,8 +93,8 @@ const Header = () => {
               </div>
               <button
                 type="button"
-                onClick={() => signOut({ callbackUrl: "/login" })}
-                className=" font-semibold -600 text-white text-xs bg-green-700 hover:bg-green-900 px-3.5 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5"
+                onClick={() => signOut()}
+                className="font-semibold text-white text-xs bg-green-700 hover:bg-green-900 px-3.5 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <LogOut size={13} />
                 <span>Logout</span>

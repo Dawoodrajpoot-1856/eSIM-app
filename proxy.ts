@@ -23,8 +23,6 @@ export default withAuth(
         return NextResponse.redirect(url);
       }
     }
-
-    // 2. AGENT ROUTES (/agent/*)
     if (pathname.startsWith("/agent")) {
       const hasAccess =
         role === "agent" ||
