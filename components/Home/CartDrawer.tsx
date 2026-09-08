@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
@@ -20,6 +20,12 @@ export default function CartDrawer() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Ensure component only renders fully on the client to prevent hydration mismatch with localStorage
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const totalItemsCount = cartItems.reduce(
     (sum, item) => sum + item.quantity,
@@ -38,7 +44,7 @@ export default function CartDrawer() {
         aria-label="Open Cart"
       >
         <ShoppingCart size={22} />
-        {totalItemsCount > 0 && (
+        {isMounted && totalItemsCount > 0 && (
           <span className="absolute top-0.5 right-0.5 bg-green-800 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
             {totalItemsCount}
           </span>
@@ -52,7 +58,8 @@ export default function CartDrawer() {
         <div>
           <SheetHeader className="text-left border-b pb-4">
             <SheetTitle className="text-xl font-bold text-green-800 flex items-center gap-2">
-              <ShoppingCart size={20} /> Your Cart ({totalItemsCount})
+              <ShoppingCart size={20} /> Your Cart (
+              {isMounted ? totalItemsCount : 0})
             </SheetTitle>
             <SheetDescription>
               Review your items before checkout
@@ -60,7 +67,11 @@ export default function CartDrawer() {
           </SheetHeader>
 
           <div className="py-4 space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-            {cartItems.length === 0 ? (
+            {!isMounted ? (
+              <div className="py-16 text-center text-gray-500 text-sm">
+                Loading cart...
+              </div>
+            ) : cartItems.length === 0 ? (
               <div className="py-16 text-center text-gray-500 text-sm">
                 Your cart is currently empty.
               </div>
@@ -132,7 +143,7 @@ export default function CartDrawer() {
           <div className="flex justify-between items-center mb-4 text-base font-semibold text-gray-800">
             <span>Subtotal:</span>
             <span className="text-xl font-extrabold text-green-800">
-              ${subtotal.toFixed(2)}
+              ${isMounted ? subtotal.toFixed(2) : "0.00"}
             </span>
           </div>
 
@@ -141,7 +152,9 @@ export default function CartDrawer() {
               href="/checkout"
               onClick={() => setIsCartOpen(false)}
               className={`w-full bg-green-800 hover:bg-green-900 text-white py-3 rounded-xl font-semibold transition-all shadow-md flex items-center justify-center gap-2 text-sm cursor-pointer ${
-                cartItems.length === 0 ? "opacity-50 pointer-events-none" : ""
+                !isMounted || cartItems.length === 0
+                  ? "opacity-50 pointer-events-none"
+                  : ""
               }`}
             >
               <span>Proceed to Checkout</span>

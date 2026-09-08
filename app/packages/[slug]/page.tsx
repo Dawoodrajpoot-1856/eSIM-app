@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 const slugify = (text: string) => {
+  if (!text) return "";
   return text
     .toLowerCase()
     .trim()
@@ -42,16 +43,24 @@ export default function PackageDetailPage() {
       if (!slugParam) return;
 
       setLoading(true);
+      try {
+        // Supabase se saare plans fetch karke client-side par slug match karna
+        const { data, error } = await supabase.from("plans").select("*");
 
-      const { data, error } = await supabase.from("plans").select("*");
-
-      if (error) {
-        console.error("Error fetching plan:", error.message);
-      } else if (data) {
-        const foundPlan = data.find((p: any) => slugify(p.title) === slugParam);
-        setPlan(foundPlan || null);
+        if (error) {
+          console.error("Error fetching plan:", error.message);
+        } else if (data) {
+          // Slug comparison ko mazeed secure banaya taake match miss na ho
+          const foundPlan = data.find(
+            (p: any) => slugify(p.title) === slugify(slugParam),
+          );
+          setPlan(foundPlan || null);
+        }
+      } catch (err) {
+        console.error("Unexpected error:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchPlanDetail();
