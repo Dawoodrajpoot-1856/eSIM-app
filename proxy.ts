@@ -6,41 +6,52 @@ export default withAuth(
     const token = req.nextauth.token;
     const pathname = req.nextUrl.pathname;
     const role = token?.role;
+    const email = token?.email;
 
     const ADMIN_EMAIL = "dawoodraj1856@gmail.com";
     const AGENT_EMAIL = "agent@gmail.com";
 
+    // Admin routes
     if (pathname.startsWith("/admin")) {
       const hasAccess =
         role === "admin" ||
         role === "agent" ||
-        token?.email === ADMIN_EMAIL ||
-        token?.email === AGENT_EMAIL;
+        email === ADMIN_EMAIL ||
+        email === AGENT_EMAIL;
 
       if (!hasAccess) {
         const url = new URL("/", req.url);
         url.searchParams.set("error", "admin_only");
+
         return NextResponse.redirect(url);
       }
     }
+
+    // Agent routes
     if (pathname.startsWith("/agent")) {
       const hasAccess =
         role === "agent" ||
         role === "admin" ||
-        token?.email === AGENT_EMAIL ||
-        token?.email === ADMIN_EMAIL;
+        email === AGENT_EMAIL ||
+        email === ADMIN_EMAIL;
 
       if (!hasAccess) {
         const url = new URL("/", req.url);
         url.searchParams.set("error", "agent_only");
+
         return NextResponse.redirect(url);
       }
     }
+
+    return NextResponse.next();
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token }) => {
+        return !!token;
+      },
     },
+
     pages: {
       signIn: "/",
     },
