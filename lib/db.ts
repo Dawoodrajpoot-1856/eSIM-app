@@ -1,35 +1,20 @@
 // lib/db.ts
 import { createClient } from "@supabase/supabase-js";
 
-const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseUrl = rawUrl
-  .trim()
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
   .replace(/\/+$/, "")
   .replace(/\/rest\/v1$/, "");
-const supabaseAnonKey = (
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
-).trim();
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    "⚠️ Warning: Supabase Environment Variables are missing in .env.local",
+  throw new Error(
+    "❌ Error: Supabase Environment Variables (URL and Anon Key) are missing in Vercel/Environment Settings!",
   );
 }
 
-export const supabase = createClient(
-  supabaseUrl || "https://placeholder.supabase.co",
-  supabaseAnonKey || "placeholder-key",
-  {
-    auth: {
-      persistSession: false,
-    },
-    global: {
-      fetch: (url, options = {}) => {
-        return fetch(url, {
-          ...options,
-          cache: "no-store",
-        });
-      },
-    },
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
   },
-);
+});
