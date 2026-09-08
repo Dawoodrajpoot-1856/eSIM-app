@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import CartDrawer from "./CartDrawer";
 import MobileMenu from "./MobileMenu";
@@ -10,8 +11,10 @@ import { PackagePlus, FilePlus2, LogOut } from "lucide-react";
 
 const Header = () => {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   const userRole = (session?.user as any)?.role || "customer";
+
   const hasAdminAccess =
     userRole === "admin" ||
     userRole === "agent" ||
@@ -39,12 +42,14 @@ const Header = () => {
           >
             Home
           </Link>
+
           <Link
             href="/packages"
             className="py-1 font-medium hover:text-green-800 transition-colors"
           >
             Packages
           </Link>
+
           <Link
             href="/blogs"
             className="py-1 font-medium hover:text-green-800 transition-colors"
@@ -84,16 +89,23 @@ const Header = () => {
                     ? session.user.name.charAt(0).toUpperCase()
                     : "U"}
                 </div>
+
                 <span className="text-xs font-semibold text-green-900 max-w-[100px] truncate">
                   {session.user.name || "User"}
                 </span>
+
                 <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-green-200/70 text-green-900">
                   {userRole}
                 </span>
               </div>
+
               <button
                 type="button"
-                onClick={() => signOut()}
+                onClick={() =>
+                  signOut({
+                    callbackUrl: pathname || "/",
+                  })
+                }
                 className="font-semibold text-white text-xs bg-green-700 hover:bg-green-900 px-3.5 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <LogOut size={13} />
@@ -108,6 +120,7 @@ const Header = () => {
               >
                 Login
               </Link>
+
               <Link
                 href="/signup"
                 className="text-sm font-semibold text-white bg-green-800 px-4 py-1.5 rounded-full"

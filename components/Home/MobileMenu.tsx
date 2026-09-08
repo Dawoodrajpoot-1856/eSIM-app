@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import React from "react";
+import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { PackagePlus, FilePlus2, Menu, LogOut } from "lucide-react";
 import {
@@ -26,6 +27,8 @@ export default function MobileMenu({
   status,
   userRole,
 }: MobileMenuProps) {
+  const pathname = usePathname();
+
   return (
     <div className="md:hidden">
       <Sheet>
@@ -47,9 +50,11 @@ export default function MobileMenu({
             <SheetClose className="text-left">
               <Link href="/">Home</Link>
             </SheetClose>
+
             <SheetClose className="text-left">
               <Link href="/packages">Packages</Link>
             </SheetClose>
+
             <SheetClose className="text-left">
               <Link href="/blogs">Blogs</Link>
             </SheetClose>
@@ -57,6 +62,7 @@ export default function MobileMenu({
             {hasAdminAccess && (
               <>
                 <hr className="my-2 border-gray-200" />
+
                 <SheetClose className="text-left">
                   <Link
                     href="/admin/add-package"
@@ -66,6 +72,7 @@ export default function MobileMenu({
                     <span>Add Packages</span>
                   </Link>
                 </SheetClose>
+
                 <SheetClose className="text-left">
                   <Link
                     href="/admin/add-blogs"
@@ -88,18 +95,25 @@ export default function MobileMenu({
                       ? session.user.name.charAt(0).toUpperCase()
                       : "U"}
                   </div>
+
                   <div>
                     <p className="text-sm font-bold text-green-900">
                       {session.user.name || "User"}
                     </p>
+
                     <p className="text-xs text-gray-500">
                       {session.user.email}
                     </p>
                   </div>
                 </div>
+
                 <SheetClose
-                  onClick={() => signOut({ callbackUrl: "/login" })}
-                  className="w-full flex items-center justify-center gap-2  font-semibold text-white text-xs  bg-green-700 hover:bg-green-900  py-2.5 rounded-full cursor-pointer transition-all"
+                  onClick={() =>
+                    signOut({
+                      callbackUrl: pathname || "/",
+                    })
+                  }
+                  className="w-full flex items-center justify-center gap-2 font-semibold text-white text-xs bg-green-700 hover:bg-green-900 py-2.5 rounded-full cursor-pointer transition-all"
                 >
                   <LogOut size={16} />
                   <span>Logout</span>
@@ -115,6 +129,7 @@ export default function MobileMenu({
                     Login
                   </Link>
                 </SheetClose>
+
                 <SheetClose className="w-full">
                   <Link
                     href="/signup"
