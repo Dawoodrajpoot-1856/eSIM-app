@@ -103,7 +103,7 @@ const Header = () => {
                 type="button"
                 onClick={() =>
                   signOut({
-                    callbackUrl: pathname || "/",
+                    callbackUrl: "https://esim-app-codiea.vercel.app/",
                   })
                 }
                 className="font-semibold text-white text-xs bg-green-700 hover:bg-green-900 px-3.5 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5"

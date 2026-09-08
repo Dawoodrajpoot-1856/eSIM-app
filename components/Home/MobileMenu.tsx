@@ -108,7 +108,11 @@ export default function MobileMenu({
                 </div>
 
                 <SheetClose
-                  onClick={() => signOut({ callbackUrl: pathname || "/" })}
+                  onClick={() =>
+                    signOut({
+                      callbackUrl: "https://esim-app-codiea.vercel.app/",
+                    })
+                  }
                   className="w-full flex items-center justify-center gap-2 font-semibold text-white text-xs bg-green-700 hover:bg-green-900 py-2.5 rounded-full cursor-pointer transition-all"
                 >
                   <LogOut size={16} />
