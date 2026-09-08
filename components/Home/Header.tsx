@@ -101,12 +101,14 @@ const Header = () => {
 
               <button
                 type="button"
-                onClick={() =>
-                  signOut({
-                    callbackUrl: "https://esim-app-codiea.vercel.app/",
-                  })
-                }
-                className="font-semibold text-white text-xs bg-green-700 hover:bg-green-900 px-3.5 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5"
+                onClick={async () => {
+                  // 1. Pehle NextAuth ka session khatam karein bina automatic redirect ke
+                  await signOut({ redirect: false });
+
+                  // 2. Phir browser ko forcefully live URL par refresh/redirect kar dein
+                  window.location.href = "https://esim-app-codiea.vercel.app/";
+                }}
+                className="..."
               >
                 <LogOut size={13} />
                 <span>Logout</span>
