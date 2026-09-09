@@ -40,7 +40,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       confirmPassword: "",
     },
   });
-
   const registerMutation = useMutation({
     mutationFn: async (data: SignupFormData) => {
       const res = await fetch("/api/register", {
@@ -61,13 +60,17 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
       return resData;
     },
-    onSuccess: () => {
-      setSuccessMsg(
-        "Account kamyabi se ban gaya! Login page par redirect ho rahe hain...",
-      );
-      setTimeout(() => {
-        router.push("/login");
-      }, 1500);
+    onSuccess: async (data, variables) => {
+      setSuccessMsg("Account kamyabi se ban gaya! Login ho raha hai...");
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      await signIn("credentials", {
+        redirect: true,
+        email: variables.email,
+        password: variables.password,
+        callbackUrl: "/",
+      });
     },
     onError: (err: any) => {
       setErrorMsg(err.message || "Kuch ghalat ho gaya.");
