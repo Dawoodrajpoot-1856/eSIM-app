@@ -78,7 +78,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         );
         router.push("/login");
       } else {
-        // Direct home page pe redirect
         router.push("/");
         router.refresh();
       }

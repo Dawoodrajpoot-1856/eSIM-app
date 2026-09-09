@@ -71,9 +71,28 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+      // Production URL priority: process.env.NEXTAUTH_URL -> baseUrl
+      const productionUrl =
+        process.env.NEXTAUTH_URL ||
+        (process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : baseUrl);
+
+      // Agar relative URL hai (jaise "/")
+      if (url.startsWith("/")) {
+        return `${productionUrl}${url}`;
+      }
+
+      // Agar domain match karta ho
+      try {
+        if (new URL(url).origin === new URL(productionUrl).origin) {
+          return url;
+        }
+      } catch {
+        // invalid url fallback
+      }
+
+      return productionUrl;
     },
   },
   session: {

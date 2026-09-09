@@ -1,51 +1,56 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export default withAuth(
-  function Proxy(req) {
-    const token = req.nextauth.token;
-    const pathname = req.nextUrl.pathname;
-    const role = token?.role;
+export async function proxy(req: NextRequest) {
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-    const ADMIN_EMAIL = "dawoodraj1856@gmail.com";
-    const AGENT_EMAIL = "agent@gmail.com";
+  const pathname = req.nextUrl.pathname;
+  const role = token?.role;
 
-    if (pathname.startsWith("/admin")) {
-      const hasAccess =
-        role === "admin" ||
-        role === "agent" ||
-        token?.email === ADMIN_EMAIL ||
-        token?.email === AGENT_EMAIL;
+  const ADMIN_EMAIL = "dawoodraj1856@gmail.com";
+  const AGENT_EMAIL = "agent@gmail.com";
 
-      if (!hasAccess) {
-        const url = new URL("/", req.url);
-        url.searchParams.set("error", "admin_only");
-        return NextResponse.redirect(url);
-      }
+  // 1. Agar user logged in hi nahi hai aur protected page pe aaya hai
+  if (!token) {
+    const loginUrl = new URL("/", req.nextUrl.origin);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // 2. Admin routes check
+  if (pathname.startsWith("/admin")) {
+    const hasAccess =
+      role === "admin" ||
+      role === "agent" ||
+      token?.email === ADMIN_EMAIL ||
+      token?.email === AGENT_EMAIL;
+
+    if (!hasAccess) {
+      const url = new URL("/", req.nextUrl.origin);
+      url.searchParams.set("error", "admin_only");
+      return NextResponse.redirect(url);
     }
-    if (pathname.startsWith("/agent")) {
-      const hasAccess =
-        role === "agent" ||
-        role === "admin" ||
-        token?.email === AGENT_EMAIL ||
-        token?.email === ADMIN_EMAIL;
+  }
 
-      if (!hasAccess) {
-        const url = new URL("/", req.url);
-        url.searchParams.set("error", "agent_only");
-        return NextResponse.redirect(url);
-      }
+  // 3. Agent routes check
+  if (pathname.startsWith("/agent")) {
+    const hasAccess =
+      role === "agent" ||
+      role === "admin" ||
+      token?.email === AGENT_EMAIL ||
+      token?.email === ADMIN_EMAIL;
+
+    if (!hasAccess) {
+      const url = new URL("/", req.nextUrl.origin);
+      url.searchParams.set("error", "agent_only");
+      return NextResponse.redirect(url);
     }
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token,
-    },
-    pages: {
-      signIn: "/",
-    },
-  },
-);
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: ["/admin/:path*", "/agent/:path*", "/checkout"],
