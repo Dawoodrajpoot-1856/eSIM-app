@@ -10,6 +10,9 @@ export default withAuth(
     const ADMIN_EMAIL = "dawoodraj1856@gmail.com";
     const AGENT_EMAIL = "agent@gmail.com";
 
+    // req.nextUrl.origin use karne se yeh hamesha live domain (Vercel URL) uthayega, localhost nahi
+    const baseUrl = req.nextUrl.origin;
+
     if (pathname.startsWith("/admin")) {
       const hasAccess =
         role === "admin" ||
@@ -18,11 +21,10 @@ export default withAuth(
         token?.email === AGENT_EMAIL;
 
       if (!hasAccess) {
-        const url = new URL("/", req.url);
-        url.searchParams.set("error", "admin_only");
-        return NextResponse.redirect(url);
+        return NextResponse.redirect(`${baseUrl}/?error=admin_only`);
       }
     }
+
     if (pathname.startsWith("/agent")) {
       const hasAccess =
         role === "agent" ||
@@ -31,9 +33,7 @@ export default withAuth(
         token?.email === ADMIN_EMAIL;
 
       if (!hasAccess) {
-        const url = new URL("/", req.url);
-        url.searchParams.set("error", "agent_only");
-        return NextResponse.redirect(url);
+        return NextResponse.redirect(`${baseUrl}/?error=agent_only`);
       }
     }
   },
@@ -41,9 +41,7 @@ export default withAuth(
     callbacks: {
       authorized: ({ token }) => !!token,
     },
-    pages: {
-      signIn: "/",
-    },
+    // Yahan se pages.signIn hata diya gaya hai taaki hardcoded/local routing na ho
   },
 );
 
