@@ -4,7 +4,7 @@ import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { PackagePlus, FilePlus2, Menu, LogOut } from "lucide-react";
+import { PackagePlus, FilePlus2, Menu, LogOut, Loader2 } from "lucide-react";
 import {
   Sheet,
   SheetClose,
@@ -47,23 +47,32 @@ export default function MobileMenu({
           </SheetHeader>
 
           <div className="flex flex-col gap-4 py-6 text-base font-medium">
-            <SheetClose className="text-left">
-              <Link href="/">Home</Link>
+            <SheetClose>
+              <Link href="/" className="hover:text-green-800 transition">
+                Home
+              </Link>
             </SheetClose>
 
-            <SheetClose className="text-left">
-              <Link href="/packages">Packages</Link>
+            <SheetClose>
+              <Link
+                href="/packages"
+                className="hover:text-green-800 transition"
+              >
+                Packages
+              </Link>
             </SheetClose>
 
-            <SheetClose className="text-left">
-              <Link href="/blogs">Blogs</Link>
+            <SheetClose>
+              <Link href="/blogs" className="hover:text-green-800 transition">
+                Blogs
+              </Link>
             </SheetClose>
 
             {hasAdminAccess && (
               <>
                 <hr className="my-2 border-gray-200" />
 
-                <SheetClose className="text-left">
+                <SheetClose>
                   <Link
                     href="/admin/add-package"
                     className="flex items-center gap-2 text-sm text-green-800 bg-green-50 p-2.5 rounded-lg font-semibold"
@@ -73,7 +82,7 @@ export default function MobileMenu({
                   </Link>
                 </SheetClose>
 
-                <SheetClose className="text-left">
+                <SheetClose>
                   <Link
                     href="/admin/add-blogs"
                     className="flex items-center gap-2 text-sm text-green-800 bg-green-50 p-2.5 rounded-lg font-semibold"
@@ -87,7 +96,11 @@ export default function MobileMenu({
 
             <hr className="my-2 border-gray-200" />
 
-            {status === "authenticated" && session?.user ? (
+            {status === "loading" ? (
+              <div className="flex justify-center py-4">
+                <Loader2 size={24} className="animate-spin text-green-800" />
+              </div>
+            ) : status === "authenticated" && session?.user ? (
               <div className="flex flex-col gap-3 pt-2">
                 <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-200">
                   <div className="w-10 h-10 rounded-full bg-green-800 text-white flex items-center justify-center font-bold">
@@ -100,40 +113,41 @@ export default function MobileMenu({
                     <p className="text-sm font-bold text-green-900">
                       {session.user.name || "User"}
                     </p>
-
                     <p className="text-xs text-gray-500">
                       {session.user.email}
                     </p>
                   </div>
                 </div>
 
-                <SheetClose
-                  onClick={async () => {
-                    await signOut({ redirect: false });
-                    window.location.href =
-                      "https://esim-app-codiea.vercel.app/";
-                  }}
-                  className="w-full flex items-center justify-center gap-2 font-semibold text-white text-xs bg-green-700 hover:bg-green-900 py-2.5 rounded-full cursor-pointer transition-all"
-                >
-                  <LogOut size={16} />
-                  <span>Logout</span>
+                <SheetClose>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await signOut({ redirect: false });
+                      window.location.href = "/";
+                    }}
+                    className="w-full flex items-center justify-center gap-2 font-semibold text-white text-xs bg-green-700 hover:bg-green-900 py-2.5 rounded-full cursor-pointer transition-all"
+                  >
+                    <LogOut size={16} />
+                    <span>Logout</span>
+                  </button>
                 </SheetClose>
               </div>
             ) : (
               <div className="flex flex-col gap-2 pt-2">
-                <SheetClose className="w-full">
+                <SheetClose>
                   <Link
                     href="/login"
-                    className="block w-full text-center border-2 border-green-800 text-green-800 py-2 rounded-full font-semibold text-sm"
+                    className="block w-full text-center border-2 border-green-800 text-green-800 py-2 rounded-full font-semibold text-sm hover:bg-green-50 transition"
                   >
                     Login
                   </Link>
                 </SheetClose>
 
-                <SheetClose className="w-full">
+                <SheetClose>
                   <Link
                     href="/signup"
-                    className="block w-full text-center bg-green-800 text-white py-2 rounded-full font-semibold text-sm"
+                    className="block w-full text-center bg-green-800 text-white py-2 rounded-full font-semibold text-sm hover:bg-green-900 transition"
                   >
                     Sign Up
                   </Link>

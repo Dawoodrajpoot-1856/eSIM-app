@@ -64,7 +64,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     onSuccess: async (data, variables) => {
       setSuccessMsg("Account kamyabi se ban gaya! Login ho raha hai...");
 
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const res = await signIn("credentials", {
         redirect: false,
@@ -73,13 +73,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       });
 
       if (res?.error) {
-        setErrorMsg(
-          "Auto-login fail ho gaya. Please Login page se login karein.",
-        );
-        router.push("/login");
+        setErrorMsg("Auto-login nahi ho saka, please login page par jayein.");
+        window.location.href = "/login";
       } else {
-        router.push("/");
-        router.refresh();
+        // window.location.href se page fresh load hoga
+        // aur Logout button khud-ba-khud nazar aa jayega!
+        window.location.href = "/";
       }
     },
     onError: (err: any) => {

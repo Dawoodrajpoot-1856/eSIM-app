@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import CartDrawer from "./CartDrawer";
 import MobileMenu from "./MobileMenu";
-import { PackagePlus, FilePlus2, LogOut } from "lucide-react";
+import { PackagePlus, FilePlus2, LogOut, Loader2 } from "lucide-react";
 
 const Header = () => {
   const { data: session, status } = useSession();
@@ -81,7 +81,12 @@ const Header = () => {
 
           <CartDrawer />
 
-          {status === "authenticated" && session?.user ? (
+          {/* Session check hote waqt loading spinner taake UI flicker na ho */}
+          {status === "loading" ? (
+            <div className="hidden sm:flex items-center justify-center w-20 h-9">
+              <Loader2 size={18} className="animate-spin text-green-800" />
+            </div>
+          ) : status === "authenticated" && session?.user ? (
             <div className="hidden sm:flex items-center gap-2.5">
               <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-full">
                 <div className="w-6 h-6 rounded-full bg-green-800 text-white flex items-center justify-center text-xs font-bold">
@@ -103,9 +108,9 @@ const Header = () => {
                 type="button"
                 onClick={async () => {
                   await signOut({ redirect: false });
-                  window.location.href = "https://esim-app-codiea.vercel.app/";
+                  window.location.href = "/";
                 }}
-                className="font-semibold text-white text-xs bg-green-700 hover:bg-green-900 px-3.5 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5"
+                className="font-semibold text-white text-xs bg-green-700 hover:bg-green-900 px-3.5 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
               >
                 <LogOut size={13} />
                 <span>Logout</span>
@@ -115,14 +120,14 @@ const Header = () => {
             <div className="hidden sm:flex items-center gap-2">
               <Link
                 href="/login"
-                className="text-sm font-semibold text-green-800 border-2 border-green-800 px-4 py-1.5 rounded-full"
+                className="text-sm font-semibold text-green-800 border-2 border-green-800 px-4 py-1.5 rounded-full hover:bg-green-50 transition"
               >
                 Login
               </Link>
 
               <Link
                 href="/signup"
-                className="text-sm font-semibold text-white bg-green-800 px-4 py-1.5 rounded-full"
+                className="text-sm font-semibold text-white bg-green-800 hover:bg-green-900 px-4 py-1.5 rounded-full transition"
               >
                 Sign Up
               </Link>
