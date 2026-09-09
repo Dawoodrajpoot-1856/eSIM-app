@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   SignalHigh,
   CreditCard,
+  ShoppingCart,
   AlertCircle,
 } from "lucide-react";
 
@@ -44,13 +45,11 @@ export default function PackageDetailPage() {
 
       setLoading(true);
       try {
-        // Supabase se saare plans fetch karke client-side par slug match karna
         const { data, error } = await supabase.from("plans").select("*");
 
         if (error) {
           console.error("Error fetching plan:", error.message);
         } else if (data) {
-          // Slug comparison ko mazeed secure banaya taake match miss na ho
           const foundPlan = data.find(
             (p: any) => slugify(p.title) === slugify(slugParam),
           );
@@ -79,6 +78,21 @@ export default function PackageDetailPage() {
       }),
     );
     router.push("/checkout");
+  };
+
+  const handleAddToCart = () => {
+    if (!plan) return;
+    dispatch(
+      addToCart({
+        id: plan.id || plan.title,
+        title: plan.title,
+        price: plan.price,
+        dataAmount: plan.dataAmount,
+        validity: plan.validity,
+        category: plan.category,
+      }),
+    );
+    alert("Plan added to cart sucessfully")
   };
 
   if (loading) {
@@ -254,13 +268,23 @@ export default function PackageDetailPage() {
                 </div>
               </div>
 
-              <div>
+              {/* Action Buttons */}
+              <div className="space-y-3">
                 <button
                   onClick={handleBuyNow}
                   className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-98 flex items-center justify-center gap-2 text-sm cursor-pointer"
                 >
                   <CreditCard size={18} />
                   <span>Buy Package Now</span>
+                </button>
+
+                {/* Add to Cart Button added right below Buy Now */}
+                <button
+                  onClick={handleAddToCart}
+                  className="w-full bg-white hover:bg-gray-50 text-green-800 border-2 border-green-800 font-bold py-3.5 rounded-xl transition-all shadow-sm active:scale-98 flex items-center justify-center gap-2 text-sm cursor-pointer"
+                >
+                  <ShoppingCart size={18} />
+                  <span>Add to Cart</span>
                 </button>
               </div>
 
