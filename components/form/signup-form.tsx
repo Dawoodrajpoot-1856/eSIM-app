@@ -40,6 +40,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       confirmPassword: "",
     },
   });
+
   const registerMutation = useMutation({
     mutationFn: async (data: SignupFormData) => {
       const res = await fetch("/api/register", {
@@ -65,12 +66,22 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      await signIn("credentials", {
-        redirect: true,
+      const res = await signIn("credentials", {
+        redirect: false,
         email: variables.email,
         password: variables.password,
-        callbackUrl: "/",
       });
+
+      if (res?.error) {
+        setErrorMsg(
+          "Auto-login fail ho gaya. Please Login page se login karein.",
+        );
+        router.push("/login");
+      } else {
+        // Direct home page pe redirect
+        router.push("/");
+        router.refresh();
+      }
     },
     onError: (err: any) => {
       setErrorMsg(err.message || "Kuch ghalat ho gaya.");
@@ -86,7 +97,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   return (
     <Card
       {...props}
-      className="w-full max-w-lg mx-auto  sm:my-8 shadow-xl shadow-green-950/5 border border-gray-200/90 rounded-3xl overflow-hidden bg-white"
+      className="w-full max-w-lg mx-auto sm:my-8 shadow-xl shadow-green-950/5 border border-gray-200/90 rounded-3xl overflow-hidden bg-white"
     >
       <CardHeader className="space-y-1.5 text-center pt-5 pb-2 px-6">
         <div className="mx-auto w-10 h-10 rounded-xl bg-gradient-to-tr from-green-950 via-green-900 to-green-800 text-white flex items-center justify-center shadow-md shadow-green-900/20">

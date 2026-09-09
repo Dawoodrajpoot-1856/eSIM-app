@@ -3,10 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { supabase } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-if (process.env.VERCEL_URL && !process.env.NEXTAUTH_URL) {
-  process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
-}
-
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
