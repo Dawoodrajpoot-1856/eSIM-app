@@ -12,7 +12,7 @@ const Footer = () => {
                 height={40}
                 width={120}
                 className="h-10 w-auto object-contain rounded-lg"
-                src="/logo.jpg"
+                src="/favicon.ico"
                 alt="Logo"
               />
             </Link>
