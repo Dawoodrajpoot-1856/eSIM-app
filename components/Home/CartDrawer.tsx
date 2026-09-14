@@ -22,7 +22,6 @@ export default function CartDrawer() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Ensure component only renders fully on the client to prevent hydration mismatch with localStorage
   useEffect(() => {
     setIsMounted(true);
   }, []);

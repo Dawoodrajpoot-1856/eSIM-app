@@ -1,20 +1,65 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react"; // 👈 useEffect add kiya
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { removeFromCart, updateQuantity } from "@/store/cartSlice";
-import { Trash2, Plus, Minus, ShieldCheck, CreditCard } from "lucide-react";
+import {
+  Trash2,
+  Plus,
+  Minus,
+  ShieldCheck,
+  CreditCard,
+  Loader2,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
+  const [loading, setLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
   );
+
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cartItems }),
+      });
+
+      const data = await res.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Payment error: " + (data.error || "Something went wrong"));
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Payment request fail ho gayi!");
+      setLoading(false);
+    }
+  };
+
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="animate-spin text-green-800" size={32} />
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -137,9 +182,22 @@ export default function CheckoutPage() {
                 </span>
               </div>
 
-              <button className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 text-sm cursor-pointer mt-4">
-                <CreditCard size={18} />
-                <span>Pay Now</span>
+              <button
+                onClick={handleCheckout}
+                disabled={loading}
+                className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 text-sm cursor-pointer mt-4 disabled:opacity-60"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    <span>Redirecting to Payment...</span>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard size={18} />
+                    <span>Pay Now (${subtotal.toFixed(2)})</span>
+                  </>
+                )}
               </button>
 
               <div className="flex items-center gap-2 text-xs text-gray-500 justify-center pt-2">
