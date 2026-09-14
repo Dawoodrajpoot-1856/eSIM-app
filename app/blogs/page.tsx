@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { supabase } from "@/lib/db";
 import BlogsShow from "@/components/blogslugdetails/BlogsShow";
 
