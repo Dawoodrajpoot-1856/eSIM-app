@@ -13,13 +13,11 @@ export async function proxy(req: NextRequest) {
   const ADMIN_EMAIL = "dawoodraj1856@gmail.com";
   const AGENT_EMAIL = "agent@gmail.com";
 
-  // 1. Agar user logged in hi nahi hai aur protected page pe aaya hai
   if (!token) {
     const loginUrl = new URL("/", req.nextUrl.origin);
     return NextResponse.redirect(loginUrl);
   }
 
-  // 2. Admin routes check
   if (pathname.startsWith("/admin")) {
     const hasAccess =
       role === "admin" ||
@@ -34,7 +32,6 @@ export async function proxy(req: NextRequest) {
     }
   }
 
-  // 3. Agent routes check
   if (pathname.startsWith("/agent")) {
     const hasAccess =
       role === "agent" ||
