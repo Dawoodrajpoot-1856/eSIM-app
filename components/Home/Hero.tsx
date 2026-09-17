@@ -55,7 +55,7 @@ const Hero = () => {
           </div>
 
           <div className="w-full lg:w-1/2 flex justify-center items-center">
-            <div className="w-full max-w-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white">
+            <div className="w-full max-w-125 rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white">
               <Image
                 src="/Hero.jpg"
                 alt="Travel eSIM Connectivity"
