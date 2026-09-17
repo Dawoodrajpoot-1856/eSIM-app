@@ -10,7 +10,7 @@ const createSlug = (title: string) => {
 };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://esim-app-codiea.vercel.app/";
+  const baseUrl = "https://esim-app-codiea.vercel.app";
 
   const { data: packages } = await supabase.from("plans").select("title");
 
